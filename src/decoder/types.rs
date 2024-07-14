@@ -1,4 +1,4 @@
-use alloc::{string::String, vec::Vec};
+use alloc::{collections::BTreeMap, string::String, string::ToString, vec::Vec};
 use serde_json::Value;
 
 #[repr(u64)]
@@ -26,27 +26,32 @@ pub enum Error {
 }
 
 #[derive(serde::Deserialize, serde::Serialize, Clone)]
-pub enum ParsedTrait {
-    String(String),
-    Number(u64),
-    SVG(String),
+pub struct ParsedTrait {
+    #[serde(flatten)]
+    traits: BTreeMap<String, Value>,
 }
 
 impl ParsedTrait {
-    pub fn get_string(&self) -> Result<&String, Error> {
-        if let ParsedTrait::String(value) = self {
-            Ok(value)
+    pub fn get_string(&self) -> Result<&str, Error> {
+        if let Some((_, v)) = self.traits.iter().next() {
+            Ok(v.as_str().ok_or(Error::SchemaInvalidParsedTraitType)?)
         } else {
             Err(Error::SchemaInvalidParsedTraitType)
         }
     }
 
     pub fn get_number(&self) -> Result<u64, Error> {
-        if let ParsedTrait::Number(value) = self {
-            Ok(*value)
+        if let Some((_, v)) = self.traits.iter().next() {
+            Ok(v.as_u64().ok_or(Error::SchemaInvalidParsedTraitType)?)
         } else {
             Err(Error::SchemaInvalidParsedTraitType)
         }
+    }
+
+    pub fn new(key: &str, value: Value) -> Self {
+        let mut traits = BTreeMap::new();
+        traits.insert(key.to_string(), value);
+        Self { traits }
     }
 }
 

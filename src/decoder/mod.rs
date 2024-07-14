@@ -59,13 +59,12 @@ pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
                         Pattern::Raw => {
                             let value = value
                                 .get_string()
-                                .cloned()
                                 .map_err(|_| Error::DecodeInvalidRawValue)?;
                             let template = part
                                 .args
                                 .as_str()
                                 .ok_or(Error::DecodeInvalidRawValueTemplate)?;
-                            template.to_owned().replace("{value}", &value)
+                            template.to_owned().replace("{value}", value)
                         }
                     }
                 } else {
@@ -99,7 +98,7 @@ pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
             // generate standard dob/0 output
             let output = StandardDOBOutput {
                 name: name.split('.').next().unwrap().to_owned(),
-                traits: vec![ParsedTrait::SVG(svg_content)],
+                traits: vec![ParsedTrait::new("SVG", Value::String(svg_content))],
             };
             Ok(output)
         })
