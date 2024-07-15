@@ -32,12 +32,12 @@ pub fn dobs_parse_parameters(args: Vec<&[u8]>) -> Result<Parameters, Error> {
 
 pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
     let Parameters {
-        dob0_output,
+        dob0_output: mut output,
         svg_traits,
     } = parameters;
 
     // decode svg parts
-    let outputs = svg_traits
+    let mut svg_outputs = svg_traits
         .chunk_by(|a, b| a.name == b.name)
         .map(|parts| {
             let mut svg_attributes = vec![];
@@ -45,9 +45,7 @@ pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
             let mut name = String::new();
             for part in parts.iter() {
                 name.clone_from(&part.name); // names are the same
-                let value = if let Some(value) =
-                    get_dob0_value_by_name(&part.dob0_trait, &dob0_output)
-                {
+                let value = if let Some(value) = get_dob0_value_by_name(&part.dob0_trait, &output) {
                     match part.pattern {
                         Pattern::Options | Pattern::Range => {
                             if let Some(value) = get_dob1_value_by_dob0_value(&part.args, value)? {
@@ -104,7 +102,8 @@ pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
         })
         .collect::<Result<Vec<_>, _>>()?;
 
-    Ok(serde_json::to_string(&outputs).unwrap().as_bytes().to_vec())
+    output.append(&mut svg_outputs);
+    Ok(serde_json::to_string(&output).unwrap().as_bytes().to_vec())
 }
 
 pub(crate) fn decode_trait_schema(traits_pool: Vec<Vec<Value>>) -> Result<Vec<TraitSchema>, Error> {
