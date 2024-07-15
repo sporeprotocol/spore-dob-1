@@ -22,3 +22,4 @@ rm ./$name.json
 echo "deployment finished"
 
 # usage: ./deploy.sh https://testnet.ckbapp.dev/ ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqfqmf4hphl9jkrw3934mwe6m3a2nx88rzgdlw820
+# usage: ./deploy.sh https://mainnet.ckb.dev/ ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqfqmf4hphl9jkrw3934mwe6m3a2nx88rzgrd9gqh mainnet
