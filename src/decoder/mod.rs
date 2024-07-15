@@ -37,7 +37,7 @@ pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
     } = parameters;
 
     // decode svg parts
-    let mut svg_outputs = svg_traits
+    let mut svg_output = svg_traits
         .chunk_by(|a, b| a.name == b.name)
         .map(|parts| {
             let mut svg_attributes = vec![];
@@ -102,7 +102,8 @@ pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
         })
         .collect::<Result<Vec<_>, _>>()?;
 
-    output.append(&mut svg_outputs);
+    output.retain(|v| !v.name.starts_with('_'));
+    output.append(&mut svg_output);
     Ok(serde_json::to_string(&output).unwrap().as_bytes().to_vec())
 }
 
