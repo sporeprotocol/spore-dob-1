@@ -30,6 +30,7 @@ To use DOB1 protocol in real world, we give below examples:
     name: "DOBs collection",
     description: {
         description: "Collection Description",
+        ver: 1,
         decoders: [
             // DOB0 pattern
             {
