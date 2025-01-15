@@ -32,6 +32,7 @@ SVG 本质上是一种用 XML 格式描述图像排列的方式，因此用户�
     name: "DOBs collection",
     description: {
         description: "Collection Description",
+        ver: 1,
         decoders: [
             // DOB0 pattern
             {
